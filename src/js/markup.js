@@ -4,19 +4,19 @@ export function galleryMarkup(evt) {
   const gallery = evt
     .map(({ webformatURL, tags, likes, views, comments, downloads }) => {
       return `<div class="photo-card">
-    <img src="${webformatURL}" alt="${tags}" width="250" loading="lazy" />
+    <img src="${webformatURL}" alt="${tags}" width="420" height="300" loading="lazy" />
     <div class="info">
       <p class="info-item">
-        <b>${likes}</b>
+        <b>Likes<span>${likes}</span></b>
       </p>
       <p class="info-item">
-        <b>${views}</b>
+        <b>Views<span>${views}</span></b>
       </p>
       <p class="info-item">
-        <b>${comments}</b>
+        <b>Comments<span>${comments}</span></b>
       </p>
       <p class="info-item">
-        <b>${downloads}</b>
+        <b>Downloads<span>${downloads}</span></b>
       </p>
     </div>
   </div>`;
