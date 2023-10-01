@@ -24,7 +24,6 @@ function selectSubmit(evt) {
 
   newServiceAPI.resetPage();
   newFetchRequest().then(response => {
-    console.log(response.data.hits.length);
     if (response.data.hits.length === 0) {
       return onEmptyArrTest();
     }
