@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { galleryMarkup } from './markup';
 import { refs } from './refs';
 
 const BASE_URL = 'https://pixabay.com/api/';

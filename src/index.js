@@ -1,6 +1,13 @@
-import { serviceAPI } from './js/fetch';
+import { serviceAPI } from './js/fetchAPI';
 import { refs } from './js/refs';
 import { galleryMarkup } from './js/markup';
+import { onEmptyLineTest } from './js/testsFn';
+import { onEmptyArrTest } from './js/testsFn';
+import { onTotalHitsTest } from './js/testsFn';
+
+import Notiflix from 'notiflix';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const newServiceAPI = new serviceAPI();
 
@@ -12,41 +19,46 @@ function selectSubmit(evt) {
   newServiceAPI.query = evt.currentTarget.searchQuery.value;
 
   if (newServiceAPI.query === '') {
-    return alert('Enter the text of the query');
+    return onEmptyLineTest();
   }
 
   newServiceAPI.resetPage();
-  newFetchRequest();
+  newFetchRequest().then(response => {
+    if (response.data.hits.length === 0) {
+      return onEmptyArrTest();
+    }
+
+    Notiflix.Notify.success(
+      `Hooray! We found ${response.data.totalHits} images.`
+    );
+  });
 }
 
 function newFetchRequest() {
   refs.loadMoreBtnEl.classList.add('visually-hidden');
 
-  newServiceAPI
+  return newServiceAPI
     .fetchRequest()
     .then(response => {
-      newServiceAPI.incrementPage();
-
       const result = response.data.hits;
       galleryMarkup(result);
 
-      if (result.length === 0) {
-        throw new Error(result.statusText);
-      }
+      lightbox = new SimpleLightbox('.gallery a').refresh();
 
       refs.loadMoreBtnEl.classList.remove('visually-hidden');
 
-      // if (response.data.hits.length * page === response.data.totalHits) {
-      //   refs.loadMoreBtnEl.classList.add('visually-hidden');
-      //   console.log(
-      //     "We're sorry, but you've reached the end of search results."
-      //   );
-      // }
+      if (Math.ceil(response.data.totalHits / 40) === newServiceAPI.page) {
+        onTotalHitsTest();
+      }
+
+      newServiceAPI.incrementPage();
+
+      return response;
     })
     .catch(err => {
-      console.warn(
-        'Sorry, there are no images matching your search query. Please try again.',
-        err
-      );
+      Notiflix.Notify.warning(
+        'Sorry, there are no images matching your search query. Please try again.'
+      ),
+        err;
     });
 }

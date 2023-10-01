@@ -2,8 +2,18 @@ import { refs } from './refs';
 
 export function galleryMarkup(evt) {
   const gallery = evt
-    .map(({ webformatURL, tags, likes, views, comments, downloads }) => {
-      return `<div class="photo-card">
+    .map(
+      ({
+        webformatURL,
+        tags,
+        likes,
+        views,
+        comments,
+        downloads,
+        largeImageURL,
+      }) => {
+        return `<a href="${largeImageURL}">
+        <div class="photo-card">
     <img src="${webformatURL}" alt="${tags}" width="420" height="300" loading="lazy" />
     <div class="info">
       <p class="info-item">
@@ -19,8 +29,9 @@ export function galleryMarkup(evt) {
         <b>Downloads<span>${downloads}</span></b>
       </p>
     </div>
-  </div>`;
-    })
+  </div></a>`;
+      }
+    )
     .join('');
 
   refs.galleryDivEl.insertAdjacentHTML('beforeend', gallery);
