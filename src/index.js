@@ -26,13 +26,14 @@ async function onSelectSubmit(evt) {
     newServiceAPI.resetPage();
 
     const result = await newFetchRequest();
-    const { hits, totalHits } = result;
+    const resultHit = result.hits;
+    const resultTotal = result.totalHits;
 
-    if (hits.length === 0) {
+    if (resultHit.length === 0) {
       return onEmptyArrTest();
     }
 
-    Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
+    Notiflix.Notify.success(`Hooray! We found ${resultTotal} images.`);
   } catch (error) {
     Notiflix.Notify.warning(
       'Sorry, there are no images matching your search query. Please try again.'
@@ -51,7 +52,7 @@ async function newFetchRequest() {
 
     galleryMarkup(resultMarkup);
 
-    lightbox = new SimpleLightbox('.gallery a').refresh();
+    const lightbox = new SimpleLightbox('.gallery a').refresh();
 
     refs.loadMoreBtnEl.classList.remove('visually-hidden');
 
