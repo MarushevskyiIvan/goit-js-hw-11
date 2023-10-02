@@ -11,52 +11,58 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const newServiceAPI = new serviceAPI();
 
-refs.form.addEventListener('submit', selectSubmit);
+refs.form.addEventListener('submit', onSelectSubmit);
 refs.loadMoreBtnEl.addEventListener('click', newFetchRequest);
 
-function selectSubmit(evt) {
-  evt.preventDefault();
-  newServiceAPI.query = evt.currentTarget.searchQuery.value;
+async function onSelectSubmit(evt) {
+  try {
+    evt.preventDefault();
+    newServiceAPI.query = evt.currentTarget.searchQuery.value;
 
-  if (newServiceAPI.query === '') {
-    return onEmptyLineTest();
-  }
+    if (newServiceAPI.query === '') {
+      return onEmptyLineTest();
+    }
 
-  newServiceAPI.resetPage();
-  newFetchRequest().then(({ data }) => {
-    if (data.hits.length === 0) {
+    newServiceAPI.resetPage();
+
+    const result = await newFetchRequest();
+    const { hits, totalHits } = result;
+
+    if (hits.length === 0) {
       return onEmptyArrTest();
     }
 
-    Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
-  });
+    Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
+  } catch {
+    Notiflix.Notify.warning(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+  }
 }
 
-function newFetchRequest() {
-  refs.loadMoreBtnEl.classList.add('visually-hidden');
+async function newFetchRequest() {
+  try {
+    refs.loadMoreBtnEl.classList.add('visually-hidden');
 
-  return newServiceAPI
-    .fetchRequest()
-    .then(response => {
-      const result = response.data.hits;
-      galleryMarkup(result);
+    const response = await newServiceAPI.fetchRequest();
+    const result = response.data;
+    const resultMarkup = response.data.hits;
 
-      lightbox = new SimpleLightbox('.gallery a').refresh();
+    galleryMarkup(resultMarkup);
 
-      refs.loadMoreBtnEl.classList.remove('visually-hidden');
+    lightbox = new SimpleLightbox('.gallery a').refresh();
 
-      if (Math.ceil(response.data.totalHits / 40) === newServiceAPI.page) {
-        onTotalHitsTest();
-      }
+    refs.loadMoreBtnEl.classList.remove('visually-hidden');
 
-      newServiceAPI.incrementPage();
+    if (Math.ceil(response.data.totalHits / 40) === newServiceAPI.page) {
+      onTotalHitsTest();
+    }
+    newServiceAPI.incrementPage();
 
-      return response;
-    })
-    .catch(err => {
-      Notiflix.Notify.warning(
-        'Sorry, there are no images matching your search query. Please try again.'
-      ),
-        err;
-    });
+    return result;
+  } catch {
+    Notiflix.Notify.warning(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+  }
 }
