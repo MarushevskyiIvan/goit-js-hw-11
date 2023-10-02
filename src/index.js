@@ -33,10 +33,11 @@ async function onSelectSubmit(evt) {
     }
 
     Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
-  } catch {
+  } catch (error) {
     Notiflix.Notify.warning(
       'Sorry, there are no images matching your search query. Please try again.'
     );
+    console.log(error);
   }
 }
 
@@ -60,9 +61,10 @@ async function newFetchRequest() {
     newServiceAPI.incrementPage();
 
     return result;
-  } catch {
+  } catch (error) {
     Notiflix.Notify.warning(
       'Sorry, there are no images matching your search query. Please try again.'
     );
+    console.log(error);
   }
 }
