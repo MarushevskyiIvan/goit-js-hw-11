@@ -23,14 +23,12 @@ function selectSubmit(evt) {
   }
 
   newServiceAPI.resetPage();
-  newFetchRequest().then(response => {
-    if (response.data.hits.length === 0) {
+  newFetchRequest().then(({ data }) => {
+    if (data.hits.length === 0) {
       return onEmptyArrTest();
     }
 
-    Notiflix.Notify.success(
-      `Hooray! We found ${response.data.totalHits} images.`
-    );
+    Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
   });
 }
 
